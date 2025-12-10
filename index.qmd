@@ -1,0 +1,384 @@
+---
+title: "Volatilidades"
+author:
+  - name: "Chávez Huapeo Jacqueline"
+    affiliations: "Universidad Michoacana de San Nicólas de Hidalgo" 
+    email: "2002159x@umich.mx"
+  - name: "López Carmona Audrey Carolina"
+    email: "2209983d@umich.mx"
+  - name: "Rosas Moreno Alesi"
+    email: "2209988c@umich.mx"
+toc: TRUE
+format:  pdf
+editor: visual
+---
+
+La **volatilidad** es la medida de la variación de los precios de un activo financiero en un período determinado, indicando la inestabilidad del mismo. Este se mide formalmente con la **desviación estándar** de los rendimientos de un activo, lo que cuantifica la magnitud de las fluctuaciones de precios en un período determinado. Esto no solo refleja la incertidumbre a los activos, sino que también es una herramienta escencial para la gestión de riesgos.
+
+La estimación de esta volatilidad ha evolucionado desde métodos simples que asumen su constancia, hasta modelos complejos que reconocen y toman en cuenta su naturaleza dinámica. En este documento se abordarán tres enfoques para la estimación de la volatilidad, enfocándose en las características y particularidades de cada uno y el cómo buscan capturar la naturaleza del riesgo en función de la información histórica
+
+# Volatilidades
+
+## Volatilidad convencional o fija en el tiempo
+
+La volatilidad fija en el tiempo es la desviación estándar más utilizada, representa una medida de dispersión de los rendimientos con respecto al valor medio (promedio) en un periodo determinado. Esta medida **no hace énfasis**en observaciones específicas. A todos los datos se les da la misma ponderación. Para obtenerla se usa la misma fórmula de la desviación estándar: $$ \sigma=\sqrt{\frac{\sum_{i=1}^{n}(r_i-\mu)^2}{n-1}}$$ donde: - $\mu$ es el promedio de los rendimientos - $n$ es el número de observaciones - $r_i$ es la observación $i$ del rendimiento
+
+## Volatilidad con suavizamiento exponencial. (EWA)
+
+El suavizamiento exponencial es una forma de capturar el dinamismo de la volatilidad mediante el uso de las observaciones históricas durante algún período, generalmente anual. Esta metodología le confiere mayor peso a las últimas y más recientes observaciones que a las primeras o más alejadas en el tiempo. Esto representa principalmente una ventaja sobre el promedio simple de las observaciones o volatilidad histórica: la volatilidad dinámica captura rápidamente fuertes variaciones de precios en los mercados debido a su ponderación, y por ello es posible generar mejores pronósticos en épocas de alta volatilidad.
+
+Partiendo de la volatilidad histórica que se definió anteriormente solo asignamos al cuadrado de los rendimientos un peso específico que denominaremos $w$, de forma que nos quedaría:
+
+$\sigma^2_t = \sum_{i=1}^{T} w_ir^2_{t-i}$
+
+Si hacemos que $w_i=\lambda^{i-1}(1-\lambda)$ donde $0<\lambda<1$ entonces tendremos la siguiente expresión:
+
+$\sigma^2_t = (1-\lambda) \sum_{i=1}^{T}\lambda^{i-1}r^2_{t-i}$
+
+donde:
+
+-   $\lambda$ es el factor de suavizamiento
+
+-   $r_{t-i}$ es la variación porcentual de los precios de cierre de los activos objeto de estudio en el rezago $t-i$.
+
+Como podemos observar, este modelo depende de $\lambda$ y mientras más pequeño es $\lambda$, mayor peso tienen los datos más recientes. Asi, si $\lambda=1$ el modelo se convierte en la volatilidad histórica con pesos uniformes a todas las observaciones, es decir, dado que una observacion hace $n$ días es multiplicada por $\lambda^{n-1}$ y éste es un factor muy pequeño en la medida en que la $n$ es grande, menos peso tienen las observaciones más lejanas o en pocas palabras, el peso de la variación porcentual es menor, conforme $n$ crece.
+
+### **Volatilidad con suavizamiento exponencial simplificado**
+
+La forma de cálculo de la varianza con suavizamiento exponencial puede ser simplificada en una fórmula general que podrá utilizarse para fines de pronóstico de volatilidad y covarianza en el tiempo. Esta fórmula es:
+
+$\sigma_{i,t}= \sqrt{(1-\lambda) r^2_{i,t-1} + \lambda \sigma^2_{i,t-1}}$
+
+Como se puede apreciar en la expresión anterior, la varianza (desviación estándar) estimada en $t$ depende de su valor histórico previo o rezago $\sigma^2_{i,t-1}$ y del valor cuadrático de la variación porcentual en $t−1$ $r^2_{i,t-1}$
+
+Esto permite que, una vez que se tenga el valor de la varianza en $t$, se pueda calcular la varianza en $t+n$ con la fórmula anterior de manera recursiva.
+
+## Volatilidad Generalizada Autorregresiva con Heteroscedasticidad (GARCH).
+
+El modelo GARCH fue desarrollado por Robert Engle (premio Nobel de Economía) y Tim Bollerslev en los años 80s y 90s. Este modelo es el más utilizado en la estimación de la volatilidad en la administración de riesgos y en la cuantificación de pérdidas potenciales.
+
+Los Modelos GARCH que no son más que una extensión del modelo recursivo simplificado de la volatilidad con suavizamiento exponencial, permitiendo que el valor de $$ \sigma_{t}$$ parte de una magnitud inercial o fija $$ \sigma$$:
+
+$$
+\sigma^2_{t}= \omega + \beta\epsilon^2_{t-1}  + \gamma\sigma^2_{t-1}
+$$
+
+donde: $$ \beta $$ mide la persistencia de la volatilidad $$ \gamma $$ mide el impacto del shock reciente
+
+La diferencia radica en que el modelo GARCH comparado con el Suavizamiento Exponencial incluye un componente fijo de la volatilidad $$ (\omega) $$, mientras que el EWA no lo tiene. Además los valores $$ \beta =(1- \lambda)$$ y $$\gamma=\lambda$$ no son seleccionados por el analista. Si no, estos se calculan a través de estimaciones con métodos numéricos o de optimización para llegar a valores óptimos partiendo de los datos.
+
+Se debe cumplir: $$ \beta $$ y $$\gamma$$ deben de ser positivos y menores a 1. $$ \beta+\gamma < 1$$, para que el modelo sea estable y converja a un valor de volatilidad de largo plazo. $$\omega$$
+
+Dado esto el modelo Garch es más completo ya que permite que la volatilidad cambia con el tiempo haciendo posible se hagan pronósticos de volatilidad de manera secuencial en t+n.
+
+Para este modelo la volatilidad de largo plazo $$\omega$$ se da: $$\omega =\frac {1}{1- \beta -\gamma}$$
+
+El modelo también es recursivo en su forma funcional, lo que permite se puedan agregar mas rezagos de $$\epsilon^2_{t-1}  $$ y de $$\sigma^2_{t-1}$$. La expresión generalizada queda de la siguiente manera:
+
+$$
+\sigma^2_{t}= \alpha + \sum_{p=1}^{P}\beta_{q}\epsilon^2_{t-p}  +\sum_{q=1}^{Q} \gamma_{q}\sigma^2_{t-q}
+$$
+
+Para determinar el mejor modelo con $$ P$$ y $$Q$$ rezagos en términos econométricos, de todas las combinaciones posibles, se utiliza el criterio de información de Akaike (AIC) o el criterio de información bayesiano (BIC) para determinar el mejor modelo.
+
+El modelo GARCH es muy importante porque parte de la idea de que la volatilidad cambia con el tiempo lo cual es muy realista además de que esta suele moverse por rachas. En la vida real esto muestra cómo se comportan los mercados financieros en la realidad. Sin embargo, el modelo es complejo y puede ser muy tardado , por lo que se considera más práctica hacer el cálculo de la volatilidad mediante el caso particular de un modelo GARCH (1,1).
+
+A continuación se un análisis cuantitativo del mejor ajuste de los 3 tipos de volatilidad con los rendimientos continuamente compuestos de una inversión de *\$500,000.00* en el fondo QQQ, conocido como Invesco QQQ Trust, que es un ETF que replica el índice Nasdaq-100, que incluye las 100 mayores empresas no financieras que cotizan en el NASDAQ (valuado en pesos mexicanos).
+
+# Cálculo de volatilidades
+
+```{r librerias}
+# Se utilizan las funciones de la librería YahooFinance que se está desarrollando en GitHub:
+source("https://raw.githubusercontent.com/OscarVDelatorreTorres/yahooFinance/main/datosMultiplesYahooFinance.R")
+
+#Se cargan las funciones de la librería riskmanagementsuite:
+source("https://raw.githubusercontent.com/OscarVDelatorreTorres/riskManagementSuiteR/refs/heads/main/riskManagementSuiteFunctions.R")
+library(dplyr)
+library(plotly)
+library(DT)
+library(rugarch)
+```
+
+```{r, precio QQQ}
+# Se descarga la información y variaciones porcentuales desde Yahoo Finance:
+tickerV=c("QQQ")
+deD="2023-11-20"
+deD2="2019-11-20"
+hastaD="2024-11-20"
+per="D"
+paridadFX="USDMXN=X"
+convertirFX=c(TRUE)
+
+Datos=historico_multiples_precios(tickers=tickerV,de=deD,hasta=hastaD,periodicidad=per,fxRate=paridadFX,whichToFX=convertirFX)
+
+datatable(Datos$tablaPrecios)
+```
+
+Supongamos que tenemos una posición de 5,000.00 en el portafolio, el cuál está invertido a partes iguales en cada fondo:
+
+```{r renidmientos}
+# Matriz de rendimientos históricos (variable vectorial):
+R=as.matrix(Datos$tablaRendimientosCont[,2:ncol(Datos$tablaRendimientosCont)])
+wi=rep(1,1)
+portReturns=R%*%wi
+# Nuestro portafolio
+M=500000
+datosReturns=data.frame(Fecha=Datos$tablaRendimientosCont$Date,
+                        PortReturns=portReturns*M)
+```
+
+## Fija en el tiempo y EWA
+
+```{r desviaciones convencional}
+# Desviacion convencional:
+Desvi_convencional=sd(datosReturns$PortReturns)
+```
+
+```{r EWA}
+lambda95=0.95
+lambda98=0.98
+seqT=seq(from=nrow(datosReturns),to=1,by=-1)-1
+lambdaT95=lambda95^seqT
+lambdaT98=lambda98^seqT
+rendimientosCuadraticos=datosReturns$PortReturns^2
+rendimientosSuavizados95=rendimientosCuadraticos*lambdaT95
+rendimientosSuavizados98=rendimientosCuadraticos*lambdaT98
+sigmaQQQExponencial95=sqrt((1-lambda95)*sum(rendimientosSuavizados95))
+sigmaQQQExponencial98=sqrt((1-lambda98)*sum(rendimientosSuavizados98))
+```
+
+```{r tabla desviaciones}
+tablaSigmas=data.frame(sigmaConvencional=Desvi_convencional,sigmaExponencial95=sigmaQQQExponencial95,sigmaExponencial98=sigmaQQQExponencial98)
+datatable(tablaSigmas)
+```
+
+## GARCH simétrico
+
+```{r Garch}
+# Gaussiano
+modeloGARCH=ugarchspec(variance.model = list(model = "sGARCH", garchOrder = c(1, 1)), mean.model = list(armaOrder = c(0, 0), include.mean = FALSE), distribution.model = "norm")
+# T-student
+modeloGARCH_T=ugarchspec(variance.model = list(model = "sGARCH", garchOrder = c(1, 1)), mean.model = list(armaOrder = c(0, 0), include.mean = FALSE), distribution.model = "std")
+# GED
+modeloGARCH_GED=ugarchspec(variance.model = list(model = "sGARCH", garchOrder = c(1, 1)), mean.model = list(armaOrder = c(0, 0), include.mean = FALSE), distribution.model = "ged")
+# GARCH GAUSSIANO
+ajusteGARCH=ugarchfit(spec=modeloGARCH, data=datosReturns$PortReturns)
+# GARCH T-STUDENT
+ajusteGARCH_T=ugarchfit(spec=modeloGARCH_T, data=datosReturns$PortReturns)
+# GARCH GED
+ajusteGARCH_GED=ugarchfit(spec=modeloGARCH_GED, data=datosReturns$PortReturns)
+```
+
+```{r Funcion_ExtraerModelo, include=FALSE}
+# Función para extraer información de cada modelo
+extraer_info_modelo <- function(ajuste, nombre_modelo) {
+  # Coeficientes
+  coefs <- coef(ajuste)
+  
+  # Criterio AIC
+  aic_val <- infocriteria(ajuste)["Akaike",]
+  
+  # Crear data.frame con coeficientes
+  df_coefs <- data.frame(
+    Parametro = names(coefs),
+    Valor = round(as.numeric(coefs), 6),
+    stringsAsFactors = FALSE
+  )
+  
+  # Añadir fila con el AIC
+  df_coefs <- rbind(df_coefs, 
+                    data.frame(Parametro = "AIC", 
+                               Valor = round(aic_val, 4)))
+  
+  # Añadir nombre del modelo como columna
+  df_coefs[[nombre_modelo]] <- df_coefs$Valor
+  df_coefs$Valor <- NULL
+  
+  return(df_coefs)
+}
+```
+
+```{r}
+info_norm = extraer_info_modelo(ajusteGARCH, "GARCH_Gaussiano")
+info_t = extraer_info_modelo(ajusteGARCH_T, "GARCH_tStudent")
+info_ged = extraer_info_modelo(ajusteGARCH_GED, "GARCH_GED")
+
+tabla_completa = info_norm %>%
+  full_join(info_t, by = "Parametro") %>%
+  full_join(info_ged, by = "Parametro")
+
+print(tabla_completa)
+```
+
+## GJR-GARCH (asimétrico)
+
+```{r GJRGARCH}
+# Gaussiano
+modelo_gjrGARCH=ugarchspec(variance.model = list(model = "gjrGARCH", garchOrder = c(1, 1)), mean.model = list(armaOrder = c(0, 0), include.mean = FALSE), distribution.model = "norm")
+# T-student
+modelo_gjrGARCH_T=ugarchspec(variance.model = list(model = "gjrGARCH", garchOrder = c(1, 1)), mean.model = list(armaOrder = c(0, 0), include.mean = FALSE), distribution.model = "std")
+# GED
+modelo_gjrGARCH_GED=ugarchspec(variance.model = list(model = "gjrGARCH", garchOrder = c(1, 1)), mean.model = list(armaOrder = c(0, 0), include.mean = FALSE), distribution.model = "ged")
+# GARCH GAUSSIANO
+ajuste_gjrGARCH=ugarchfit(spec=modelo_gjrGARCH, data=datosReturns$PortReturns)
+# GARCH T-STUDENT
+ajusteg_jrGARCH_T=ugarchfit(spec=modelo_gjrGARCH_T, data=datosReturns$PortReturns)
+# GARCH GED
+ajuste_gjrGARCH_GED=ugarchfit(spec=modelo_gjrGARCH_GED, data=datosReturns$PortReturns)
+```
+
+```{r}
+info_norm_gjr = extraer_info_modelo(ajuste_gjrGARCH, "gjrGARCH_Gaussiano")
+info_t_gjr = extraer_info_modelo(ajusteg_jrGARCH_T, "gjrGARCH_tStudent")
+info_ged_gjr = extraer_info_modelo(ajuste_gjrGARCH_GED, "gjrGARCH_GED")
+
+tabla_completa_gjr = info_norm_gjr %>%
+  full_join(info_t_gjr, by = "Parametro") %>%
+  full_join(info_ged_gjr, by = "Parametro")
+
+print(tabla_completa_gjr)
+```
+
+# Criterio de información de Akaike
+
+-   GARCH simétrico con función de verosimilitud gaussiana. 29.589
+-   GARCH simétrico con función de verosimilitud t-Student. 9.583
+-   GARCH simétrico con función de verosimilitud GED. 29.590
+-   GJR-GARCH (asimetrico) con función de verosimilitud gaussiana. 29.579
+-   GJR-GARCH (asimetrico) con función de verosimilitud t-Student. 29.582
+-   GJR-GARCH (asimetrico) con función de verosimilitud GED. 29.585
+
+Como podemos observar el modelo con menor criterio de informacion de Akaike mas bajo es el GJR-GARCH (asimetrico) con funcion de verosimilitud gaussian, por lo tanto es el que mejor ajusta a los largo de toda la serie de tiempo.
+
+La elección del modelo de volatilidad impacta directamente la precisión en la medición del riesgo, por lo que se analizarán los pros y contras de cada modelo. Para esto, es importante tomar en cuenta que existen períodos de alta y baja volatilidad denominados conglomerados de volatilidad que nos dice que si la volatilidad es elevada en un período, tiende a seguir siéndolo; si es baja en un período tiende a seguir siendo baja en el período siguiente.
+
+# Pros y Contras de volatilidades
+
+## Pros y Contras de usar la volatilidad convencional.
+
+| Pros | Contras |
+|-----------------------------|-------------------------------------------|
+| Esta medida de volatilidad es fácil de interpretar | Cambia con facilidad con valores extremos |
+| Toma en cuenta todas las observaciones | Pondera de la misma manera los valores de las observaciones |
+
+Al ponderar de la misma manera todos los valores, asume que la volatilidad es constante, lo cual es una falacia empírica. Por lo que falla totalmente al abordar el conglomerado de volatilidades La volatilidad histórica o convencional simplemente ignora el conglomerado; pues trata un rendimiento reciente muy grande igual que uno que ocurrió hace meses.
+
+## Pros y contras del suavizamiento exponencial
+
+| Pros | Contras |
+|-----------------------------------|-------------------------------------|
+| Es simple e intuitivo | Puede llegar a ser limitado y sesgado |
+| Es adaptable y robusto | Es sensible a valores atípicos o extremos |
+| Puede realizar un pronóstico con datos limitados. | La elección de los parámetros de suavizamiento apropiados requiere criterio propio. |
+
+Aunque reacciona al conglomerado, porque asigna un mayor peso a los rendimientos recientes y esto lo hace más sensible a la información de mercado que causa el conglomerado, no lo modela explícitamente, pues asume que los datos son estacionarios, lo que significa que tienen una media y varianza constantes a lo largo del tiempo, lo que no siempre es cierto.
+
+## Pros y contras del GARCH
+
+| Pros | Contras |
+|-----------------------------------|-------------------------------------|
+| Es realista además suele moverse por rachas | Es complejo y puede ser muy tardado |
+
+Dado que en este modelo la volatilidad cambia con el tiempo, haciendo posible se hagan pronósticos de volatilidad de manera secuencial en $t+n$. Si modela de manera explícita y eficiente el conglomerado de volatilidades.
+
+Tomar en cuenta el conglomerado de volatilidades es importante porque es modelar el riesgo real del mercado. La volatilidad convencional como ya vimos, ignora por completo esto. El EWA es una solución rápida y práctica que reconoce el conglomerado, pero no lo modela a la perfección ya que se puede sesgar, en cambio el GARCH a pesar de ser más complejo y tardado ofrece una visión más precisa y pronosticable del riesgo a modelar. Por lo que el GARCH sería nuestra solución a este problema.
+
+# Conclusiones
+
+```{r}
+volatilidades_completas <- data.frame(
+  Fecha = datosReturns$Fecha,
+  Rendimientos = datosReturns$PortReturns,
+  
+  Vol_Convencional = rep(Desvi_convencional, nrow(datosReturns)),
+  Vol_EWA_95 = rep(sigmaQQQExponencial95, nrow(datosReturns)),
+  Vol_EWA_98 = rep(sigmaQQQExponencial98, nrow(datosReturns)),
+  
+  # GARCH simétrico
+  Vol_GARCH_Normal = sigma(ajusteGARCH),
+  Vol_GARCH_T = sigma(ajusteGARCH_T),
+  Vol_GARCH_GED = sigma(ajusteGARCH_GED),
+  
+  # GJR-GARCH asimétrico
+  Vol_GJR_Normal = sigma(ajuste_gjrGARCH),
+  Vol_GJR_T = sigma(ajusteg_jrGARCH_T),
+  Vol_GJR_GED = sigma(ajuste_gjrGARCH_GED)
+)
+
+
+plot_ly(volatilidades_completas) %>%
+  add_trace(x = ~Fecha, y = ~Rendimientos, 
+            type = 'scatter', mode = 'lines',
+            name = 'Rendimientos', 
+            yaxis = 'y2',
+            line = list(color = 'darkgray', width = 1)) %>%
+  
+  add_trace(x = ~Fecha, y = ~Vol_Convencional,
+            type = 'scatter', mode = 'lines',
+            name = 'Convencional',
+            line = list(color = 'gray', width = 1.5)) %>%
+  
+  add_trace(x = ~Fecha, y = ~Vol_EWA_95,
+            type = 'scatter', mode = 'lines',
+            name = 'EWA λ=0.95',
+            line = list(color = 'brown', width = 1.5)) %>%
+  
+  add_trace(x = ~Fecha, y = ~Vol_EWA_98,
+            type = 'scatter', mode = 'lines',
+            name = 'EWA λ=0.98',
+            line = list(color = 'blue', width = 1.5)) %>%
+  
+  # GARCH simétrico
+  add_trace(x = ~Fecha, y = ~Vol_GARCH_Normal,
+            type = 'scatter', mode = 'lines',
+            name = 'GARCH Normal',
+            line = list(color = 'green', width = 2)) %>%
+  
+  add_trace(x = ~Fecha, y = ~Vol_GARCH_T,
+            type = 'scatter', mode = 'lines',
+            name = 'GARCH t-Student',
+            line = list(color = 'orange', width = 2)) %>%
+  
+  add_trace(x = ~Fecha, y = ~Vol_GARCH_GED,
+            type = 'scatter', mode = 'lines',
+            name = 'GARCH GED',
+            line = list(color = 'yellow', width = 2)) %>%
+  
+  # GJR-GARCH asimétrico 
+  add_trace(x = ~Fecha, y = ~Vol_GJR_Normal,
+            type = 'scatter', mode = 'lines',
+            name = 'GJR-GARCH Normal (Mejor)',
+            line = list(color = 'red', width = 3)) %>%
+  
+  add_trace(x = ~Fecha, y = ~Vol_GJR_T,
+            type = 'scatter', mode = 'lines',
+            name = 'GJR-GARCH t-Student',
+            line = list(color = 'pink', width = 2)) %>%
+  
+  add_trace(x = ~Fecha, y = ~Vol_GJR_GED,
+            type = 'scatter', mode = 'lines',
+            name = 'GJR-GARCH GED',
+            line = list(color = 'purple', width = 2)) %>%
+  
+  # layout
+  layout(title = 'Comparación de Volatilidades',
+         xaxis = list(title = 'Fecha',
+                     tickformat = "%Y-%m"),
+         yaxis = list(title = 'Volatilidad',
+                     side = 'left',
+                     showgrid = TRUE),
+         yaxis2 = list(title = 'Rendimientos',
+                      overlaying = 'y',
+                      side = 'right',
+                      showgrid = FALSE),
+         legend = list(x = 1.02, y = 0.5,
+                      bgcolor = 'rgba(255,255,255,0.8)',
+                      bordercolor = 'black'),
+         hovermode = 'x unified',
+         margin = list(r = 150)) 
+```
+
+En la gráfica se puede notar que las direncias entre los diferentes modelos son bastantes notorias.
+A primera instancia podemos apreciar a simple visa que los modelos GJR-GARCH son los que más se ajustan. Algo que se había comprobado al tener el criterio de informacion de Akaike mas bajo, por lo tanto es el que mejor ajusta a los largo de toda la serie de tiempo.
+Por esto podemos decir que hay coherencia entre los resultados de la métrica estadística y la evidencia visal, lo que refuerza la elección del GJR-GARCH.
+Mostrando aspectos importantes como que no se debe ignorar la asimetría en la volatilidad ya que esto harían imprecisos nuestros resultados.
